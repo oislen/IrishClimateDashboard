@@ -1,1 +1,1 @@
-python3 -m unittest discover unittests/utilities
+uv run python3 -m unittest discover unittests/utilities

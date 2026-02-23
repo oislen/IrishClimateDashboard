@@ -1,1 +1,1 @@
-call python -m unittest discover unittests\utilities
+call uv run python -m unittest discover unittests\utilities
