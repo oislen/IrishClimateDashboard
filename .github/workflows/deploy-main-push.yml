@@ -51,7 +51,7 @@ jobs:
         uv sync
     - name: Test with unittest
       run: |
-        python -m unittest discover ./dashboard/unittests/utilities
+        uv run python -m unittest discover ./dashboard/unittests/utilities
 
   dockerhub-image-push:
     needs: [trivy-fs-scan, python-unittests]
