@@ -8,7 +8,7 @@ conda activate irishclimatedashboard
 conda update -n base conda --yes
 
 # install relevant libraries
-pip install -r ../requirements.txt
+pip install -r ../../requirements.txt
 
 # export environment to .yml file
 conda env export > irishclimatedashboard.yml

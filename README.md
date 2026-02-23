@@ -35,26 +35,6 @@ glorad  -  Global Radiation
 
 ## Running the Application (Windows)
 
-### Anaconda
-
-Create a local conda environment for the Irish Climate Dashboard app using [anaconda](https://www.anaconda.com/):
-
-```
-conda create --name irishclimatedashboard python=3.12 --yes
-conda activate irishclimatedashboard
-pip install -r requirements.txt
-```
-
-Start the Irish Climate Dashboard app can then be started using the following command and the local conda environment:
-
-```
-bokeh serve dashboard\\bokeh_dash_app.py
-```
-
-Once the dashboard app is running, navigate to localhost:5006 in your preferred browser
-
-* http://localhost:5006/bokeh_dash_app
-
 ### Docker
 
 The latest version of the Irish Climate Dashboard app can be found as a [docker](https://www.docker.com/) image on dockerhub here:
