@@ -1,1 +1,1 @@
-bokeh serve bokeh_dash_app.py
+uv run bokeh serve bokeh_dash_app.py
