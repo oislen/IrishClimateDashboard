@@ -1,0 +1,43 @@
+name: Development Workflow
+
+on:
+  pull_request:
+    branches: [ dev, main ]
+
+jobs:
+
+  trivy-fs-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Run Trivy vulnerability scanner in fs mode
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        exit-code: '1'
+
+  python-unittests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set environment variable
+      run: echo "GITHUB_ACTIONS_UNITTEST_FLAG=1" >> $GITHUB_ENV
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install python dependencies
+      run: |
+        uv sync
+    - name: Test with unittest
+      run: |
+        python -m unittest discover ./dashboard/unittests/utilities
