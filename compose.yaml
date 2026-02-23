@@ -1,0 +1,7 @@
+name: Irish Climate Dashboard
+services:
+    irishclimatedashboard:
+        container_name: icd
+        ports:
+            - 5006:5006
+        image: oislen/irishclimatedashboard:latest
