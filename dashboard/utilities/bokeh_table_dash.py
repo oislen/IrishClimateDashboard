@@ -26,7 +26,7 @@ def bokeh_table_dash():
     logging.info("Initialise table plot begin")
     master_data = pl.read_parquet(cons.master_data_fpath)
     # generate bokeh data for line plot
-    bokeh_table_data_params = {"master_data":master_data}
+    bokeh_table_data_params = {"master_data":master_data, "stat":cons.stat_default, "agg_level":cons.line_agg_level_default, "counties":cons.counties}
     bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
     # create bokeh plot
     bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
