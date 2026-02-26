@@ -9,7 +9,7 @@ def bokeh_table_plot(bokeh_data_dict):
     data_table = DataTable(
         source=bokeh_data_dict['dataSource'],
         columns=bokeh_data_dict['dataColumns'],
-        width=cons.FIG_SETTING['width'],
+        width=int(cons.FIG_SETTING['width']*1.25),
         height=cons.FIG_SETTING['height'],
         #stylesheets=[stylesheet],
         autosize_mode="none",
