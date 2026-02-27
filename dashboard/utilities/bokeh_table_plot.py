@@ -1,8 +1,10 @@
+from beartype import beartype
 import cons
 from bokeh.models import DataTable, Div
 from bokeh.layouts import column
 
-def bokeh_table_plot(bokeh_data_dict):
+@beartype
+def bokeh_table_plot(bokeh_data_dict:dict):
     """
     """
     data_table = DataTable(
