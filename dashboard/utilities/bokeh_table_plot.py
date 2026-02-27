@@ -1,5 +1,4 @@
 import cons
-from bokeh.models import DataTable
 from bokeh.models import DataTable, Div
 from bokeh.layouts import column
 
