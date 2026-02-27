@@ -1,8 +1,9 @@
 from beartype import beartype
 import polars as pl
 import polars.selectors as cs
-from bokeh.models import ColumnDataSource, TableColumn
+from bokeh.models import ColumnDataSource, TableColumn, NumberFormatter
 from utilities.bokeh_line_data import bokeh_line_data
+import cons
 
 @beartype
 def bokeh_table_data(
@@ -18,6 +19,14 @@ def bokeh_table_data(
     # possibly re-use or re-purpose bokeh line data function
     columns = agg_data.columns
     dataSource = ColumnDataSource(agg_data.to_dict(as_series=False))
-    dataColumns = [TableColumn(field=col, title=col, width=15+int(len(col)*10)) for col in columns]
+    number_formatter = NumberFormatter(format="0,0.00")
+    # create data column objects
+    dataColumns = []
+    for col in columns:
+        table_column = TableColumn(field=col, title=col, width=15+int(len(col)*10))
+        if col in cons.col_options:
+            table_column.formatter = number_formatter
+        dataColumns.append(table_column)
+    # package bokeh table data output as a dictionary
     bokeh_table_data_dict = {"dataSource":dataSource, "dataColumns":dataColumns}
     return bokeh_table_data_dict
