@@ -7,8 +7,8 @@ from bokeh.layouts import column, row
 
 # import custom modules
 import cons
-from utilities.bokeh_table_data import bokeh_table_data
-from utilities.bokeh_table_plot import bokeh_table_plot
+from table.bokeh_table_data import bokeh_table_data
+from table.bokeh_table_plot import bokeh_table_plot
 from utilities.timeit import timeit
 
 @beartype

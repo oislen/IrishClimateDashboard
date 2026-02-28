@@ -2,7 +2,7 @@ from beartype import beartype
 import polars as pl
 import polars.selectors as cs
 from bokeh.models import ColumnDataSource, TableColumn, NumberFormatter
-from utilities.bokeh_line_data import bokeh_line_data
+from line.bokeh_line_data import bokeh_line_data
 import cons
 
 @beartype

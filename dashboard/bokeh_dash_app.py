@@ -4,9 +4,9 @@ from bokeh.io import curdoc
 from bokeh.models import TabPanel, Tabs
 
 # load custom modules
-from utilities.bokeh_line_dash import bokeh_line_dash
-from utilities.bokeh_map_dash import bokeh_map_dash
-from utilities.bokeh_table_dash import bokeh_table_dash
+from line.bokeh_line_dash import bokeh_line_dash
+from map.bokeh_map_dash import bokeh_map_dash
+from table.bokeh_table_dash import bokeh_table_dash
 
 # set up logging
 lgr = logging.getLogger()
