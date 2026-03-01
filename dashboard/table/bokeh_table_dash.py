@@ -2,14 +2,15 @@ import pickle
 import logging
 import polars as pl
 from beartype import beartype
-from bokeh.models import Select, Div, Button, MultiSelect
+from bokeh.models import Select, Div, Button, MultiSelect, ScrollBox
 from bokeh.layouts import column, row
 
 # import custom modules
 import cons
 from table.bokeh_table_data import bokeh_table_data
-from table.bokeh_table_plot import bokeh_table_plot
+from table.bokeh_table_plot import table_height, table_width, bokeh_table_plot
 from utilities.timeit import timeit
+from utilities.widgets import widget_width, range_slider
 
 @beartype
 def bokeh_table_dash():
@@ -59,31 +60,22 @@ def bokeh_table_dash():
         table_county_multiselect.value = []
 
     # set up selectors for bokeh line plot
-    table_agg_level_selector = Select(
-        title="Time Span:",
-        value=cons.line_agg_level_default,
-        options=cons.line_agg_level_options,
-        width=130,
-        height=60,
-        aspect_ratio=10,
-    )
-    table_stat_selector = Select(
-        title="Aggregate:",
-        value=cons.stat_default,
-        options=cons.stat_options,
-        width=130,
-        height=60,
-        aspect_ratio=10,
-    )
-    table_county_multiselect = MultiSelect(
-        title="Counties:",
-        value=cons.counties_values,
-        options=cons.counties_options,
-        width=130,
-        height=260
-    )
-    table_county_selectall_button = Button(label="Select All", width=130)
-    table_county_clearall_button = Button(label="Clear All", width=130)
+    table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10)
+    table_stat_selector = Select(title="Aggregate:", value=cons.stat_default, options=cons.stat_options, width=widget_width, height=60, aspect_ratio=10)
+
+    # define range sliders for each weather column measure
+    range_slider_list = [Div(text="Measures:")]
+    for col in cons.col_options:
+        range_slider_list.append(range_slider(col=col, data_dict=bokeh_table_data_dict['dataSource'].data))
+    range_sliders_box = column(children=range_slider_list)
+    range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
+    range_slider_reset_button = Button(label="Reset All", width=widget_width)
+
+    # define controls for county selection
+    table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200)
+    table_county_selectall_button = Button(label="Select All", width=widget_width)
+    table_county_clearall_button = Button(label="Clear All", width=widget_width)
+
     table_agg_level_selector.on_change("value", callback_table_plot)
     table_stat_selector.on_change("value", callback_table_plot)
     table_county_multiselect.on_change("value", callback_table_plot)
@@ -91,14 +83,15 @@ def bokeh_table_dash():
     table_county_clearall_button.on_click(callback_multiselect_clearall)
 
     # structure dashboard table plot
-    space_div = Div(width=30, height=30)
-    widgets_table = column(
+    control_panel = column(children=[
         table_agg_level_selector,
         table_stat_selector,
-        table_county_multiselect,
-        table_county_selectall_button,
-        table_county_clearall_button,
+        range_sliders_scrollbox, range_slider_reset_button,
+        table_county_multiselect, table_county_selectall_button, table_county_clearall_button,
+    ],
+    height=table_height,
+    width=widget_width
     )
-    dashboard_table = row(widgets_table, table_plot)
+    dashboard_table = row(control_panel, table_plot)
 
     return dashboard_table
