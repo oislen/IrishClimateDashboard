@@ -15,8 +15,11 @@ def bokeh_table_data(
     """
     # run master data through line data function to aggregate up to desired level
     bokeh_line_data_dict = bokeh_line_data(master_data=master_data, stat=stat, agg_level=agg_level, counties=counties)
+    # calculate reference file for range slider min max values
+    min_max_ref_dict = bokeh_line_data_dict['agg_data'].select(cons.col_options).describe().filter(pl.col("statistic").is_in(["min","max"])).to_dict(as_series=False)
     agg_data = bokeh_line_data_dict['agg_data'].drop(["date", "index"]).rename({"date_str":agg_level}).with_columns(cs.numeric().round(2))
-    # possibly re-use or re-purpose bokeh line data function
+    # TODO: Add measure filter logic here
+    # pass polars filter expression through function parameters and apply filter here post aggregation
     columns = agg_data.columns
     dataSource = ColumnDataSource(agg_data.to_dict(as_series=False))
     number_formatter = NumberFormatter(format="0,0.00")
@@ -28,5 +31,5 @@ def bokeh_table_data(
             table_column.formatter = number_formatter
         dataColumns.append(table_column)
     # package bokeh table data output as a dictionary
-    bokeh_table_data_dict = {"dataSource":dataSource, "dataColumns":dataColumns}
+    bokeh_table_data_dict = {"min_max_ref_dict":min_max_ref_dict ,"dataSource":dataSource, "dataColumns":dataColumns}
     return bokeh_table_data_dict
