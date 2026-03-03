@@ -77,6 +77,9 @@ def bokeh_table_dash():
         dashboard_table.children[1] = table_plot
         logging.info("Callback table plot end")
 
+    def callback_range_slider_resetall():
+        callback_table_plot(attr='', old='', new='', source_widget='agg_level_selector')
+
     def callback_multiselect_selectall():
         table_county_multiselect.value = cons.counties_values
 
@@ -98,6 +101,7 @@ def bokeh_table_dash():
     range_sliders_box = column(children=range_slider_list)
     range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
+    range_slider_reset_button.on_click(callback_range_slider_resetall)
     # define multi-select for counties
     table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200)
     table_county_multiselect.on_change("value", partial(callback_table_plot, source_widget="counties_multiselect"))
