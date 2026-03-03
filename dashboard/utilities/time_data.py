@@ -42,10 +42,9 @@ def time_data(
         agg_data = agg_data.filter(time_span_lb & time_span_ub)
     # format date attributes
     agg_data = agg_data.with_columns(pl.col("date").dt.to_string(format=strftime).alias("date_str"))
-    agg_data = agg_data.with_columns(pl.col("date_str").str.to_datetime(format=strftime).alias("date"))
     # aggregate to county and date level
-    group_cols = ["county", "date", "date_str"]
-    agg_data = agg_data.group_by(group_cols).agg(agg_dict)
+    group_cols = ["county", "date_str"]
+    agg_data = agg_data.group_by(group_cols).agg(agg_dict+[pl.col("date").min()])
     # order results and generate plotting index
     agg_data = (agg_data
                 .sort(by=["county","date"])

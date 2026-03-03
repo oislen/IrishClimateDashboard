@@ -1,1 +1,1 @@
-call uv run bokeh serve bokeh_dash_app.py
+call uv run bokeh serve bokeh_dash_app.py --session-token-expiration 1000000

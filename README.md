@@ -4,15 +4,19 @@
 
 Dashboard applications are particularly useful for visualising multiple patterns within a dataset in a concise and user friendly way. This repository contains the code and data for running a climate dashboard which visualises meteorological data across Ireland. 
 
-The dashboard application includes two separate interactive Bokeh plots:
+The dashboard application includes three separate interactive Bokeh tabs:
 
 1. A time series plot of different aggregated climate measures over time by county
-   
-![Time Series Plot](doc/line_dash.jpg)
+
+![Time Series Dashboard](doc/line_dash.jpg)
 
 2. A gis map of different aggregated climate measures by county
 
-![Time Series Plot](doc/map_dash.jpg)
+![GIS Map Dashboard](doc/map_dash.jpg)
+
+3. A data table for filtering and exploring the underlying data source at different aggregate levels by county
+
+![Data Table Dashboard](doc/table_dash.jpg)
 
 ## Data
 
@@ -33,7 +37,7 @@ rain:   -  Precipitation Amount (mm)
 glorad  -  Global Radiation
 ```
 
-## Running the Application (Windows)
+## Running the Application
 
 ### Docker
 

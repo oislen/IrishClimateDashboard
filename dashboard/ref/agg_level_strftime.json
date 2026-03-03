@@ -1,5 +1,7 @@
 {
     "year": "%Y",
+    "month": "%m",
+    "weekno": "%W",
     "year-month": "%Y-%m",
-    "month": "%m"
+    "year-weekno": "%Y-%W"
 }

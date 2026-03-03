@@ -63,7 +63,9 @@ stat_default = stat_options[0]
 show_stations_default = []
 linedash_year_start = "2010"
 linedash_year_month_start = "2010-01"
+linedash_year_weekno_start = "2010-01"
 linedash_month_timespan = ["01", "12"]
+linedash_weekno_timespan = ["01", "52"]
 
 # bokeh server execution commands
 bat_execBokehApp = "START /MIN CMD.EXE /C exeBokehApp.bat"

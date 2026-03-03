@@ -36,15 +36,11 @@ def bokeh_line_data(
     """
     # filter for desired statistic and the previous full calendar year
     max_datetime = master_data.select(pl.col("date").max().dt.strftime("%Y").str.to_datetime("%Y") - pl.duration(days=1)).to_series()[0]
+    min_datetime = master_data.select(pl.col("date").min().dt.strftime("%Y").str.to_datetime("%Y") - pl.duration(days=1)).to_series()[0]
     data = master_data.filter((pl.col("date") <= max_datetime))
     # determine time span from date aggregate level
     date_strftime = cons.date_strftime_dict[agg_level]
-    if agg_level == "year":
-        time_span = [cons.linedash_year_start, max_datetime.strftime(date_strftime)]
-    elif agg_level == "year-month":
-        time_span = [cons.linedash_year_month_start, max_datetime.strftime(date_strftime)]
-    elif agg_level == "month":
-        time_span = cons.linedash_month_timespan
+    time_span = [min_datetime.strftime(date_strftime), max_datetime.strftime(date_strftime)]
     # generate time data aggregated by year
     agg_dict = [getattr(pl.col(col).drop_nulls(), stat)().replace({None:np.nan}).alias(col) for col in cons.col_options]
     agg_data = time_data(
