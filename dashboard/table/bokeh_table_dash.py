@@ -76,13 +76,13 @@ def bokeh_table_dash():
         dashboard_table.children[1] = table_plot
         logging.info("Callback table plot end")
 
-    def callback_range_slider_resetall():
+    def callback_range_slider_reset_all():
         callback_table_plot(attr='', old='', new='', source_widget='agg_level_selector')
 
-    def callback_multiselect_selectall():
+    def callback_multiselect_select_all():
         table_county_multiselect.value = cons.counties_values
 
-    def callback_multiselect_clearall():
+    def callback_multiselect_clear_all():
         table_county_multiselect.value = []
 
     # define select aggregate level
@@ -100,16 +100,16 @@ def bokeh_table_dash():
     range_sliders_box = column(children=range_slider_list, name="range_sliders_box")
     range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
-    range_slider_reset_button.on_click(callback_range_slider_resetall)
+    range_slider_reset_button.on_click(callback_range_slider_reset_all)
     # define multi-select for counties
     table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200, name="counties_multiselect")
     table_county_multiselect.on_change("value", partial(callback_table_plot, source_widget="counties_multiselect"))
     # define select all counties button
     table_county_selectall_button = Button(label="Select All", width=widget_width, name="counties_select_all")
-    table_county_selectall_button.on_click(callback_multiselect_selectall)
+    table_county_selectall_button.on_click(callback_multiselect_select_all)
     # define clear all counties button
     table_county_clearall_button = Button(label="Clear All", width=widget_width, name="counties_clear_all")
-    table_county_clearall_button.on_click(callback_multiselect_clearall)
+    table_county_clearall_button.on_click(callback_multiselect_clear_all)
 
     # structure dashboard table plot
     control_panel = column(children=[
