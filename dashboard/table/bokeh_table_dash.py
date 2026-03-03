@@ -98,25 +98,25 @@ def bokeh_table_dash():
         col_range_slider.on_change("value_throttled", partial(callback_table_plot, source_widget="col_range_slider"))
         range_slider_list.append(col_range_slider)
     range_sliders_box = column(children=range_slider_list, name="range_sliders_box")
-    range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
+    range_sliders_scroll_box = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
     range_slider_reset_button.on_click(callback_range_slider_reset_all)
     # define multi-select for counties
     table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200, name="counties_multiselect")
     table_county_multiselect.on_change("value", partial(callback_table_plot, source_widget="counties_multiselect"))
     # define select all counties button
-    table_county_selectall_button = Button(label="Select All", width=widget_width, name="counties_select_all")
-    table_county_selectall_button.on_click(callback_multiselect_select_all)
+    table_county_select_all_button = Button(label="Select All", width=widget_width, name="counties_select_all")
+    table_county_select_all_button.on_click(callback_multiselect_select_all)
     # define clear all counties button
-    table_county_clearall_button = Button(label="Clear All", width=widget_width, name="counties_clear_all")
-    table_county_clearall_button.on_click(callback_multiselect_clear_all)
+    table_county_clear_all_button = Button(label="Clear All", width=widget_width, name="counties_clear_all")
+    table_county_clear_all_button.on_click(callback_multiselect_clear_all)
 
     # structure dashboard table plot
     control_panel = column(children=[
         table_agg_level_selector,
         table_stat_selector,
-        range_sliders_scrollbox, range_slider_reset_button,
-        table_county_multiselect, table_county_selectall_button, table_county_clearall_button,
+        range_sliders_scroll_box, range_slider_reset_button,
+        table_county_multiselect, table_county_select_all_button, table_county_clear_all_button,
     ],
     height=table_height,
     width=widget_width
