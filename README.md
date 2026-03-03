@@ -7,18 +7,16 @@ Dashboard applications are particularly useful for visualising multiple patterns
 The dashboard application includes two separate interactive Bokeh plots:
 
 1. A time series plot of different aggregated climate measures over time by county
-   
-![Time Series Plot](doc/line_dash.jpg)
+
+![Time Series Dashboard](doc/line_dash.jpg)
 
 2. A gis map of different aggregated climate measures by county
 
-![GIS Map Plot](doc/map_dash.jpg)
-
-pg)
+![GIS Map Dashboard](doc/map_dash.jpg)
 
 3. A data table for filtering and exploring the underlying data source at different aggregate levels by county
 
-![Time Series Plot](doc/table_dash.jpg)
+![Data Table Dashboard](doc/table_dash.jpg)
 
 ## Data
 
