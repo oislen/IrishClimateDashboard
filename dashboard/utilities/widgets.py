@@ -9,7 +9,7 @@ range_slider_widget_width = 100
 def range_slider(
     col:str,
     data_dict:dict,
-    step:float=1,
+    step:float=0.01,
     height:int=40,
     width:int=range_slider_widget_width,
     sizing_mode:str="fixed"
