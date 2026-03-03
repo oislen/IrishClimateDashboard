@@ -4,7 +4,7 @@
 
 Dashboard applications are particularly useful for visualising multiple patterns within a dataset in a concise and user friendly way. This repository contains the code and data for running a climate dashboard which visualises meteorological data across Ireland. 
 
-The dashboard application includes two separate interactive Bokeh plots:
+The dashboard application includes three separate interactive Bokeh tabs:
 
 1. A time series plot of different aggregated climate measures over time by county
 
