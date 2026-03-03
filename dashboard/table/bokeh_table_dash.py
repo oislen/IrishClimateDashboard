@@ -46,7 +46,7 @@ def bokeh_table_dash():
         # extract new selector value
         agg_level = table_agg_level_selector.value
         stat = table_stat_selector.value
-        range_slider_list = dashboard_table.children[0].children[2].child.children
+        range_sliders_box = next(dashboard_table.select({"name":"range_sliders_box"}), None)
         # generate country selection
         selection = list()
         for i in table_county_multiselect.value:
@@ -54,7 +54,7 @@ def bokeh_table_dash():
         # generate measures filter
         measure_filters_list = []
         if source_widget in ("col_range_slider"):
-            for range_slider in range_slider_list[1:]:
+            for range_slider in range_sliders_box.children[1:]:
                 filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
                 measure_filters_list.append(filter_expression)
         # update bokeh data
@@ -64,10 +64,9 @@ def bokeh_table_dash():
         if source_widget in ("agg_level_selector", "stat_selector"):
             try:
                 is_updating = True
-                for range_slider in range_slider_list[1:]:
+                for range_slider in range_sliders_box.children[1:]:
                     col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
                     range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
-                dashboard_table.children[0].children[2].child.children = range_slider_list
             finally:
                 is_updating = False
         # update bokeh plot
@@ -87,10 +86,10 @@ def bokeh_table_dash():
         table_county_multiselect.value = []
 
     # define select aggregate level
-    table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10)
+    table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10, name="agg_level_selector")
     table_agg_level_selector.on_change("value", partial(callback_table_plot, source_widget="agg_level_selector"))
     # define select statistic value
-    table_stat_selector = Select(title="Aggregate:", value=cons.stat_default, options=cons.stat_options, width=widget_width, height=60, aspect_ratio=10)
+    table_stat_selector = Select(title="Aggregate:", value=cons.stat_default, options=cons.stat_options, width=widget_width, height=60, aspect_ratio=10, name="stat_selector")
     table_stat_selector.on_change("value", partial(callback_table_plot, source_widget="stat_selector"))
     # define range sliders for each weather column measure
     range_slider_list = [Div(text="Measures:")]
@@ -98,18 +97,18 @@ def bokeh_table_dash():
         col_range_slider = range_slider(col=col, data_dict=bokeh_table_data_dict['min_max_ref_dict'])
         col_range_slider.on_change("value_throttled", partial(callback_table_plot, source_widget="col_range_slider"))
         range_slider_list.append(col_range_slider)
-    range_sliders_box = column(children=range_slider_list)
+    range_sliders_box = column(children=range_slider_list, name="range_sliders_box")
     range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
     range_slider_reset_button.on_click(callback_range_slider_resetall)
     # define multi-select for counties
-    table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200)
+    table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200, name="counties_multiselect")
     table_county_multiselect.on_change("value", partial(callback_table_plot, source_widget="counties_multiselect"))
     # define select all counties button
-    table_county_selectall_button = Button(label="Select All", width=widget_width)
+    table_county_selectall_button = Button(label="Select All", width=widget_width, name="counties_select_all")
     table_county_selectall_button.on_click(callback_multiselect_selectall)
     # define clear all counties button
-    table_county_clearall_button = Button(label="Clear All", width=widget_width)
+    table_county_clearall_button = Button(label="Clear All", width=widget_width, name="counties_clear_all")
     table_county_clearall_button.on_click(callback_multiselect_clearall)
 
     # structure dashboard table plot
@@ -122,6 +121,6 @@ def bokeh_table_dash():
     height=table_height,
     width=widget_width
     )
-    dashboard_table = row(control_panel, table_plot)
+    dashboard_table = row(children=[control_panel, table_plot], name="dashboard_table")
 
     return dashboard_table
