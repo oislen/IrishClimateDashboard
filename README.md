@@ -12,7 +12,13 @@ The dashboard application includes two separate interactive Bokeh plots:
 
 2. A gis map of different aggregated climate measures by county
 
-![Time Series Plot](doc/map_dash.jpg)
+![GIS Map Plot](doc/map_dash.jpg)
+
+pg)
+
+3. A data table for filtering and exploring the underlying data source at different aggregate levels by county
+
+![Time Series Plot](doc/table_dash.jpg)
 
 ## Data
 
