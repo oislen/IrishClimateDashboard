@@ -16,8 +16,22 @@ def range_slider(
     ) -> RangeSlider:
     """
     """
+    # determine whether to disable range slider
     disabled = pd.isna(data_dict[col][0]) or pd.isna(data_dict[col][1])
+    # extract min and max values
     min_value = data_dict[col][0] if not disabled else 0
     max_value = data_dict[col][1] if not disabled else 0
-    col_range_slider = RangeSlider(start=min_value, end=max_value, value=(min_value, max_value), step=step, title=col, width=width, height=height, sizing_mode=sizing_mode, disabled=disabled, visible=not disabled)
+    # create column range slider
+    col_range_slider = RangeSlider(
+        start=min_value,
+        end=max_value,
+        value=(min_value, max_value),
+        step=step, title=col,
+        width=width,
+        height=height,
+        sizing_mode=sizing_mode,
+        disabled=disabled,
+        visible=not disabled,
+        name=f"{col}_range_slider"
+        )
     return col_range_slider
