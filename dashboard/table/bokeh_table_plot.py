@@ -21,5 +21,5 @@ def bokeh_table_plot(bokeh_data_dict:dict):
     )
     # add count of rows
     n_rows = Div(text=f"<b>Total Rows: {len(bokeh_data_dict['dataSource'].data[bokeh_data_dict['dataColumns'][0].field])}</b>", width=table_width, height=25)
-    data_table = column(data_table, n_rows)
+    data_table = column(children=[data_table, n_rows], name="table_plot")
     return data_table
