@@ -1,6 +1,7 @@
 import pickle
 import logging
 import polars as pl
+from functools import partial
 from beartype import beartype
 from bokeh.models import Select, Div, Button, MultiSelect, ScrollBox
 from bokeh.layouts import column, row
@@ -35,7 +36,7 @@ def bokeh_table_dash():
     logging.info("Initialise table plot end")
 
     # create call back function for bokeh dashboard interaction
-    def callback_table_plot(attr, old, new):
+    def callback_table_plot(attr, old, new, source_widget=None):
         logging.info("Callback table plot begin")
         # extract new selector value
         agg_level = table_agg_level_selector.value
@@ -55,10 +56,11 @@ def bokeh_table_dash():
         bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":[]}
         bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
         # dynamically update range slider min max values based on aggregation from calculated reference file
-        for range_slider in range_slider_list[1:]:
-            col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
-            range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
-        dashboard_table.children[0].children[2].child.children = range_slider_list
+        if source_widget in ("agg_level_selector", "stat_selector"):
+            for range_slider in range_slider_list[1:]:
+                col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
+                range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
+            dashboard_table.children[0].children[2].child.children = range_slider_list
         # update bokeh plot
         bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
         table_plot = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
@@ -74,10 +76,10 @@ def bokeh_table_dash():
 
     # define select aggregate level
     table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10)
-    table_agg_level_selector.on_change("value", callback_table_plot)
+    table_agg_level_selector.on_change("value", partial(callback_table_plot, source_widget="agg_level_selector"))
     # define select statistic value
     table_stat_selector = Select(title="Aggregate:", value=cons.stat_default, options=cons.stat_options, width=widget_width, height=60, aspect_ratio=10)
-    table_stat_selector.on_change("value", callback_table_plot)
+    table_stat_selector.on_change("value", partial(callback_table_plot, source_widget="stat_selector"))
     # define range sliders for each weather column measure
     range_slider_list = [Div(text="Measures:")]
     for col in cons.col_options:
@@ -87,7 +89,7 @@ def bokeh_table_dash():
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
     # define multi-select for counties
     table_county_multiselect = MultiSelect(title="Counties:", value=cons.counties_values, options=cons.counties_options, width=widget_width, height=200)
-    table_county_multiselect.on_change("value", callback_table_plot)
+    table_county_multiselect.on_change("value", partial(callback_table_plot, source_widget="counties_multiselect"))
     # define select all counties button
     table_county_selectall_button = Button(label="Select All", width=widget_width)
     table_county_selectall_button.on_click(callback_multiselect_selectall)
