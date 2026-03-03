@@ -37,7 +37,7 @@ rain:   -  Precipitation Amount (mm)
 glorad  -  Global Radiation
 ```
 
-## Running the Application (Windows)
+## Running the Application
 
 ### Docker
 
