@@ -7,8 +7,8 @@ from bokeh.layouts import column, row
 from beartype import beartype
 
 import cons
-from utilities.bokeh_map_data import bokeh_map_data
-from utilities.bokeh_map_plot import bokeh_map_plot
+from map.bokeh_map_data import bokeh_map_data
+from map.bokeh_map_plot import bokeh_map_plot
 from utilities.timeit import timeit
 
 @beartype

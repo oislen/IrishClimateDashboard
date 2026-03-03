@@ -22,7 +22,7 @@ agg_dict = [getattr(pl.col(col), stat)().replace({None:np.nan}).alias(col) for c
 data = gen_unittest_data()
 obs_time_data = time_data(data=pl.from_pandas(data), agg_dict=agg_dict).to_pandas()
 exp_data_shape = (6, 13)
-exp_data_columns = ['county', 'date', 'date_str', 'maxtp', 'mintp', 'gmin', 'soil', 'wdsp', 'sun', 'evap', 'rain', 'glorad', 'index']
+exp_data_columns = ['county', 'date_str', 'maxtp', 'mintp', 'gmin', 'soil', 'wdsp', 'sun', 'evap', 'rain', 'glorad', 'date', 'index']
 
 class Test_time_data(unittest.TestCase):
     """"""
