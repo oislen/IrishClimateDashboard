@@ -51,14 +51,14 @@ def bokeh_table_dash():
         selection = list()
         for i in table_county_multiselect.value:
             selection.append(cons.counties[int(i)])
-        ## generate measures filter
-        #measure_filters_list = []
-        #for range_slider in range_slider_list[1:]:
-        #    breakpoint()
-        #    filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
-        #    measure_filters_list.append(filter_expression)
+        # generate measures filter
+        measure_filters_list = []
+        if source_widget in ("col_range_slider"):
+            for range_slider in range_slider_list[1:]:
+                filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
+                measure_filters_list.append(filter_expression)
         # update bokeh data
-        bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":[]}
+        bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":measure_filters_list}
         bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
         # dynamically update range slider min max values based on aggregation from calculated reference file
         if source_widget in ("agg_level_selector", "stat_selector"):
@@ -93,7 +93,7 @@ def bokeh_table_dash():
     range_slider_list = [Div(text="Measures:")]
     for col in cons.col_options:
         col_range_slider = range_slider(col=col, data_dict=bokeh_table_data_dict['min_max_ref_dict'])
-        col_range_slider.on_change("value", partial(callback_table_plot, source_widget="col_range_slider"))
+        col_range_slider.on_change("value_throttled", partial(callback_table_plot, source_widget="col_range_slider"))
         range_slider_list.append(col_range_slider)
     range_sliders_box = column(children=range_slider_list)
     range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
