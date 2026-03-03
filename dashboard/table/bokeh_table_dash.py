@@ -13,6 +13,8 @@ from table.bokeh_table_plot import table_height, table_width, bokeh_table_plot
 from utilities.timeit import timeit
 from utilities.widgets import widget_width, range_slider
 
+is_updating = False
+
 @beartype
 def bokeh_table_dash():
     """Generates the bokeh table dashboard
@@ -37,6 +39,9 @@ def bokeh_table_dash():
 
     # create call back function for bokeh dashboard interaction
     def callback_table_plot(attr, old, new, source_widget=None):
+        global is_updating
+        if is_updating:
+            return
         logging.info("Callback table plot begin")
         # extract new selector value
         agg_level = table_agg_level_selector.value
@@ -57,10 +62,14 @@ def bokeh_table_dash():
         bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
         # dynamically update range slider min max values based on aggregation from calculated reference file
         if source_widget in ("agg_level_selector", "stat_selector"):
-            for range_slider in range_slider_list[1:]:
-                col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
-                range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
-            dashboard_table.children[0].children[2].child.children = range_slider_list
+            try:
+                is_updating = True
+                for range_slider in range_slider_list[1:]:
+                    col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
+                    range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
+                dashboard_table.children[0].children[2].child.children = range_slider_list
+            finally:
+                is_updating = False
         # update bokeh plot
         bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
         table_plot = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
@@ -83,7 +92,9 @@ def bokeh_table_dash():
     # define range sliders for each weather column measure
     range_slider_list = [Div(text="Measures:")]
     for col in cons.col_options:
-        range_slider_list.append(range_slider(col=col, data_dict=bokeh_table_data_dict['min_max_ref_dict']))
+        col_range_slider = range_slider(col=col, data_dict=bokeh_table_data_dict['min_max_ref_dict'])
+        col_range_slider.on_change("value", partial(callback_table_plot, source_widget="col_range_slider"))
+        range_slider_list.append(col_range_slider)
     range_sliders_box = column(children=range_slider_list)
     range_sliders_scrollbox = ScrollBox(child=range_sliders_box, width=widget_width, height=200)
     range_slider_reset_button = Button(label="Reset All", width=widget_width)
