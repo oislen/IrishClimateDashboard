@@ -61,7 +61,7 @@ def bokeh_table_dash():
         bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":measure_filters_list}
         bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
         # dynamically update range slider min max values based on aggregation from calculated reference file
-        if source_widget in ["agg_level_selector", "stat_selector"]:
+        if source_widget in ["agg_level_selector", "stat_selector", "counties_multiselect"]:
             try:
                 is_updating = True
                 for range_slider in range_sliders_box.children[1:]:
@@ -81,9 +81,11 @@ def bokeh_table_dash():
 
     def callback_multiselect_select_all():
         table_county_multiselect.value = cons.counties_values
+        callback_table_plot(attr='', old='', new='', source_widget='counties_multiselect')
 
     def callback_multiselect_clear_all():
         table_county_multiselect.value = []
+        callback_table_plot(attr='', old='', new='', source_widget='counties_multiselect')
 
     # define select aggregate level
     table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10, name="agg_level_selector")
