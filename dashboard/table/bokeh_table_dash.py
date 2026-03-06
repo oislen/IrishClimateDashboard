@@ -28,7 +28,7 @@ def bokeh_table_dash():
         The interactive bokeh table dashboard
     """
     logging.info("Initialise table plot begin")
-    master_data = pl.read_parquet(cons.master_data_fpath)
+    master_data = pl.scan_parquet(cons.master_data_fpath)
     # generate bokeh data for table plot
     bokeh_table_data_params = {"master_data":master_data, "stat":cons.stat_default, "agg_level":cons.line_agg_level_default, "counties":cons.counties}
     bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
@@ -53,7 +53,7 @@ def bokeh_table_dash():
             selection.append(cons.counties[int(i)])
         # generate measures filter
         measure_filters_list = []
-        if source_widget in ("col_range_slider"):
+        if source_widget in ["col_range_slider"]:
             for range_slider in range_sliders_box.children[1:]:
                 filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
                 measure_filters_list.append(filter_expression)
@@ -61,19 +61,19 @@ def bokeh_table_dash():
         bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":measure_filters_list}
         bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
         # dynamically update range slider min max values based on aggregation from calculated reference file
-        if source_widget in ("agg_level_selector", "stat_selector"):
+        if source_widget in ["agg_level_selector", "stat_selector"]:
             try:
                 is_updating = True
                 for range_slider in range_sliders_box.children[1:]:
                     col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
-                    range_slider.start, range_slider.end, range_slider.value = col_min_max[0], col_min_max[1], tuple(col_min_max)
+                    range_slider.start = col_min_max[0]
+                    range_slider.end = col_min_max[1]
+                    range_slider.value = tuple(col_min_max)
             finally:
                 is_updating = False
         # update bokeh plot
         bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
-        table_plot = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
-        # reassign bokeh plot to bokeh dashboard
-        dashboard_table.children[1] = table_plot
+        dashboard_table.children[1] = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
         logging.info("Callback table plot end")
 
     def callback_range_slider_reset_all():
