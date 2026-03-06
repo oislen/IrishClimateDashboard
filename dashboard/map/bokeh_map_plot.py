@@ -10,7 +10,7 @@ def bokeh_map_plot(
     bokeh_map_data_dict:dict, 
     show_stations:list
     ) -> figure:
-    """Generates the data used in the bokeh map plot.
+    """Generates the bokeh map plot.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def bokeh_map_plot(
     # define a blue color palette
     lightblue = Color("lightblue")
     steelblue = Color("steelblue")
-    palette = tuple([col.get_hex() for col in lightblue.range_to(steelblue, 100)])
+    palette = [col.get_hex() for col in lightblue.range_to(steelblue, 100)]
     # instantiate LinearColorMapper that linearly maps numbers in a range, into a sequence of colours.
     color_mapper = LinearColorMapper(
         palette=palette,
@@ -92,7 +92,7 @@ def bokeh_map_plot(
         )
     
     # add points to render stations
-    if show_stations == [0]:
+    if show_stations and (show_stations[0] == 0):
         stationpoints = map_plot.scatter(
             x="x", y="y", source=bokeh_map_data_dict['pointgeosource'], color="red", size=8, alpha=0.3
         )

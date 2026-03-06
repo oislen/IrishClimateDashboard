@@ -59,7 +59,4 @@ def bokeh_map_data(
     bokeh_map_data_dict["pointgeosource"] = pointgeosource
     bokeh_map_data_dict["color_mapper_low"] = color_mapper_low
     bokeh_map_data_dict["color_mapper_high"] = color_mapper_high
-    # pickle the bokeh map data dictionary to disk
-    # with open(cons.bokeh_map_data_fpath, 'wb') as f:
-    #    pickle.dump(bokeh_map_data_dict, f, protocol = pickle.HIGHEST_PROTOCOL)
     return bokeh_map_data_dict
