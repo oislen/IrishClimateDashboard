@@ -49,7 +49,7 @@ def gen_met_data(
 
     Parameters
     ----------
-    stations_fpath : pd.DataFrame
+    stations_fpath : str
         The file path to the met eireann stations reference data, default is cons.stations_fpath
     filter_open : bool
         Whether to only filter for only open weather stations in the met eireann stations reference data, default is True
@@ -70,13 +70,13 @@ def gen_met_data(
         # only consider open stations for now
         open_stations_filter = stations['close_year'].isnull()
         stations = stations.loc[open_stations_filter, :].reset_index(drop=True)
-    if topn_stations != None:
+    if topn_stations is not None:
         stations = stations.head(topn_stations)
     # iterate over each station and pull daily level data using using stationid
-    resp_log =[]
+    responses =[]
     for idx, row in stations.iterrows():
         logging.info(f"{idx} {row['county']} {row['station_id']} {row['name']}")
-        resp = url_retrieve(stationid=row['station_id'], scraped_data_dir=scraped_data_dir, data_level=data_level)
-        logging.info(resp)
-        resp_log.append(resp)
+        response = url_retrieve(stationid=row['station_id'], scraped_data_dir=scraped_data_dir, data_level=data_level)
+        logging.info(response)
+        responses.append(response)
     

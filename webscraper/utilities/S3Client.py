@@ -37,13 +37,18 @@ class S3Client():
         
         Parameters
         ----------
-        directory : str
+        data : pd.DataFrame
+            The raw Met Eireann data to store on s3
+        key : str
             The s3 key to store the Met Eireann data files
         bucket : str
             The s3 bucket storing the Met Eireann data files
+        schema : pyarrow.Schema
+            The pyarrow schema to use when writing parquet files to s3, default is None
         
         Returns
         -------
+        None
         """
         _, fextension = os.path.splitext(os.path.basename(key))
         try:
@@ -52,14 +57,15 @@ class S3Client():
                 buf = io.StringIO()
                 data.to_csv(buf, header=True, index=False)
                 buf.seek(0)
+                self.client.put_object(Bucket=bucket, Body=buf.getvalue().encode(), Key=key)
             elif fextension==".parquet":
                 buf = io.BytesIO()
                 data.to_parquet(buf, index=False, schema=schema)
+                self.client.put_object(Bucket=bucket, Body=buf.getvalue(), Key=key)
             else:
-                raise ValueError("Invalid file extensions {fextension}")
-            self.client.put_object(Bucket=bucket, Body=buf.getvalue(), Key=key)
+                raise ValueError(f"Invalid file extensions {fextension}")
         except Exception as e:
-            logging.info(str(e))
+            logging.error(str(e))
             
     @beartype
     def retrieve(
@@ -87,8 +93,12 @@ class S3Client():
             logging.info(f"Retrieving data from S3://{bucket}/{key}")
             # load s3 objects into list
             obj = self.client.get_object(Bucket=bucket, Key=key)
-            # decode xlsx files in body
-            data = pd.read_csv(obj["Body"])
+            if key.endswith(".parquet"):
+                # decode parquet files in body
+                data = pd.read_parquet(io.BytesIO(obj["Body"].read()))
+            elif key.endswith(".csv"):
+                # decode csv files in body
+                data = pd.read_csv(io.StringIO(obj["Body"].read().decode('utf-8')))
         except Exception as e:
-            logging.info(str(e))
+            logging.error(str(e))
         return data

@@ -52,8 +52,9 @@ def webscrape_data(
         logging.info('~~~~~ Cleaning met stations data ...')
         # run data cleaning
         gen_clean_data(
-            scraped_data_dir=cons.scraped_data_dir, 
-            cleaned_data_dir=cons.cleaned_data_dir, 
+            scraped_data_dir=cons.scraped_data_dir,
+            cleaned_data_dir=cons.cleaned_data_dir,
+            stations_fpath=cons.stations_fpath,
             store_on_s3=False
             )
     
@@ -77,7 +78,7 @@ def webscrape_data(
 
     if run_points_data:
         logging.info('~~~~~ Generating geospatial points data file ...')
-        # generate wheather station points data
+        # generate weather station points data
         gen_points_data(
             master_data_fpath=cons.master_data_fpath, 
             stations_fpath=cons.stations_fpath, 
