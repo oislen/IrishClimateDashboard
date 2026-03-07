@@ -1,5 +1,6 @@
 import pickle
 import logging
+import pandas as pd
 import polars as pl
 from functools import partial
 from beartype import beartype
@@ -42,50 +43,57 @@ def bokeh_table_dash():
         global is_updating
         if is_updating:
             return
-        logging.info("Callback table plot begin")
-        # extract new selector value
-        agg_level = table_agg_level_selector.value
-        stat = table_stat_selector.value
-        range_sliders_box = next(dashboard_table.select({"name":"range_sliders_box"}), None)
-        # generate country selection
-        selection = list()
-        for i in table_county_multiselect.value:
-            selection.append(cons.counties[int(i)])
-        # generate measures filter
-        measure_filters_list = []
-        if source_widget in ["col_range_slider"]:
-            for range_slider in range_sliders_box.children[1:]:
-                filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
-                measure_filters_list.append(filter_expression)
-        # update bokeh data
-        bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":measure_filters_list}
-        bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
-        # dynamically update range slider min max values based on aggregation from calculated reference file
-        if source_widget in ["agg_level_selector", "stat_selector", "counties_multiselect"]:
-            try:
-                is_updating = True
+        try:
+            is_updating = True
+            logging.info("Callback table plot begin")
+            # extract new selector value
+            agg_level = table_agg_level_selector.value
+            stat = table_stat_selector.value
+            range_sliders_box = next(dashboard_table.select({"name":"range_sliders_box"}), None)
+            # generate country selection
+            selection = list()
+            for i in table_county_multiselect.value:
+                selection.append(cons.counties[int(i)])
+            # generate measures filter
+            measure_filters_list = []
+            if source_widget in ["col_range_slider"]:
+                for range_slider in range_sliders_box.children[1:]:
+                    if range_slider.visible:
+                        filter_expression = (pl.col(range_slider.title) >= range_slider.value[0]) & (pl.col(range_slider.title) <= range_slider.value[1])
+                        measure_filters_list.append(filter_expression)
+            # update bokeh data
+            bokeh_table_data_params = {"master_data":master_data, "stat":stat, "agg_level":agg_level, "counties":selection, "filter_expression_list":measure_filters_list}
+            bokeh_table_data_dict = timeit(func=bokeh_table_data, params=bokeh_table_data_params)
+            # dynamically update range slider min max values based on aggregation from calculated reference file
+            if source_widget in ["agg_level_selector", "stat_selector", "counties_multiselect"]:
                 for range_slider in range_sliders_box.children[1:]:
                     col_min_max = bokeh_table_data_dict['min_max_ref_dict'][range_slider.title]
-                    range_slider.start = col_min_max[0]
-                    range_slider.end = col_min_max[1]
-                    range_slider.value = tuple(col_min_max)
-            finally:
-                is_updating = False
-        # update bokeh plot
-        bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
-        dashboard_table.children[1] = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
-        logging.info("Callback table plot end")
+                    disabled = pd.isna(col_min_max[0]) or pd.isna(col_min_max[1])
+                    range_slider.disabled = disabled
+                    range_slider.visible = not disabled
+                    if not disabled:
+                        range_slider.start = col_min_max[0]
+                        range_slider.end = col_min_max[1]
+                        range_slider.value = tuple(col_min_max)
+                    else:
+                        range_slider.start = 0
+                        range_slider.end = 0
+                        range_slider.value = (0, 0)
+            # update bokeh plot
+            bokeh_table_plot_params = {"bokeh_data_dict":bokeh_table_data_dict}
+            dashboard_table.children[1] = timeit(func=bokeh_table_plot, params=bokeh_table_plot_params)
+            logging.info("Callback table plot end")
+        finally:
+            is_updating = False
 
     def callback_range_slider_reset_all():
         callback_table_plot(attr='', old='', new='', source_widget='agg_level_selector')
 
     def callback_multiselect_select_all():
         table_county_multiselect.value = cons.counties_values
-        callback_table_plot(attr='', old='', new='', source_widget='counties_multiselect')
 
     def callback_multiselect_clear_all():
         table_county_multiselect.value = []
-        callback_table_plot(attr='', old='', new='', source_widget='counties_multiselect')
 
     # define select aggregate level
     table_agg_level_selector = Select(title="Time Span:", value=cons.line_agg_level_default, options=cons.line_agg_level_options, width=widget_width, height=60, aspect_ratio=10, name="agg_level_selector")
