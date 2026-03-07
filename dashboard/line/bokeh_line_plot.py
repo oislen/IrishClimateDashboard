@@ -40,7 +40,7 @@ def bokeh_line_plot(
     # create plot figure object
     plot = figure(toolbar_location="below", output_backend="webgl", **cons.FIG_SETTING)
     # create a horizontal line around the selection average
-    stat_value = bokeh_data_dict["agg_data"].select(pl.col(col).drop_nans().mean()).to_series()[0]
+    stat_value = bokeh_data_dict["agg_data"].select(pl.col(col).drop_nans().drop_nulls().mean()).collect().to_series()[0]
     hline = Span(
         location=stat_value,
         line_dash="dashed",
@@ -61,13 +61,19 @@ def bokeh_line_plot(
         .select(pl.col("index"), pl.col("date_str"))
         .unique()
         .sort(by="index")
+        .collect()
         .to_pandas()
         .set_index("index")
         .to_dict()["date_str"]
     )
     tmp_axis_data_dict = deepcopy(axis_data_dict)
-    if agg_level == 'year-month':
-        tmp_axis_data_dict = {key:(value if (i % 3 == 0) else "") for i, (key, value) in enumerate(axis_data_dict.items())}
+    # to avoid overcrowding of x-axis tick labels
+    if (agg_level == 'year-month'):
+        # update x-axis tick labels to show intervals of 6 for year-month aggregation
+        tmp_axis_data_dict = {key:(value if (i % 6 == 0) else "") for i, (key, value) in enumerate(axis_data_dict.items())}
+    if (agg_level == 'year-weekno'):
+        # update x-axis ticks labels to show intervals of 12 for year-weekno aggregation 
+        tmp_axis_data_dict = {key:(value if (i % 12 == 0) else "") for i, (key, value) in enumerate(axis_data_dict.items())}
     plot.xaxis.ticker = list(axis_data_dict.keys())
     plot.xaxis.major_label_overrides = tmp_axis_data_dict
     plot.xaxis.major_label_orientation = 0.75

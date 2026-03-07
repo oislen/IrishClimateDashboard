@@ -20,7 +20,7 @@ stat = 'mean'
 agg_dict = [getattr(pl.col(col), stat)().replace({None:np.nan}).alias(col) for col in cons.col_options]
 # generate unittest data
 data = gen_unittest_data()
-obs_time_data = time_data(data=pl.from_pandas(data), agg_dict=agg_dict).to_pandas()
+obs_time_data = time_data(data=pl.from_pandas(data).lazy(), agg_dict=agg_dict).collect().to_pandas()
 exp_data_shape = (6, 13)
 exp_data_columns = ['county', 'date_str', 'maxtp', 'mintp', 'gmin', 'soil', 'wdsp', 'sun', 'evap', 'rain', 'glorad', 'date', 'index']
 

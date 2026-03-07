@@ -5,22 +5,19 @@ from beartype import beartype
 
 @beartype
 def time_data(
-    data:pl.DataFrame, 
+    data:pl.LazyFrame, 
     agg_dict:list, 
-    time_span:Union[list, None]=None, 
     counties:Union[list, None]=None, 
     strftime:Union[str, None]=None
-    ) -> pl.DataFrame:
+    ) -> pl.LazyFrame:
     """Aggregates and filters Met Eireann for time series plot
 
     Parameters
     ----------
-    data : polars.DataFrame
+    data : polars.LazyFrame
         The Met Eireann data to aggregate and filter
     agg_dict : list
         The column aggregation operations to perform on the Met Eireann data
-    time_span : list
-        A list, or iterable, containing the time series start date and end date as strings to filter for
     counties : list
         A list, or iterable, containing the counties to filter for
     strftime : string
@@ -28,18 +25,13 @@ def time_data(
 
     Returns
     -------
-    polars.DataFrame
+    polars.LazyFrame
         The aggregated and filtered Met Eireann time series data
     """
     agg_data = data.clone()
     # if filtering data with respect to counties
     if counties != None:
         agg_data = agg_data.filter(pl.col("county").is_in(counties))
-    # if filtering date with respect to timespan
-    if False:#time_span != None:
-        time_span_lb = pl.col("date") >= datetime.datetime.strptime(time_span[0], strftime)
-        time_span_ub = pl.col("date") <= datetime.datetime.strptime(time_span[1], strftime)
-        agg_data = agg_data.filter(time_span_lb & time_span_ub)
     # format date attributes
     agg_data = agg_data.with_columns(pl.col("date").dt.to_string(format=strftime).alias("date_str"))
     # aggregate to county and date level

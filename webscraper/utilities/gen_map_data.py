@@ -31,6 +31,7 @@ def gen_map_data(
 
     Returns
     -------
+    None
     """
     logging.info("Loading rep / ni counties shape files ...")
     # load in county shape files
@@ -43,7 +44,7 @@ def gen_map_data(
     # concatenate county shape files
     counties = gpd.GeoDataFrame(pd.concat([rep_counties, ni_counties], ignore_index=True), crs="EPSG:2157")
     logging.info("Simplifying counties geometries ...")
-    # simplify the granularity of the geometry column
+    # simplify the granularity of the geometry column to speed up dashboard performance, tolerance is in the units of the crs (EPSG:2157 is in meters)
     counties["geometry"] = counties["geometry"].simplify(tolerance=1000)
     logging.info("Standardising county names to title case ...")
     # clean up county column
@@ -70,9 +71,9 @@ def gen_map_data(
         data=pd.merge(left=counties, right=agg_data.to_pandas(), on="county", how="left"),
         crs="EPSG:2157",
         )
-    if os.path.exists(map_data_fpath):
+    if os.path.exists(os.path.dirname(map_data_fpath)):
         logging.info("Writing counties data to disk as .parquet file ...")
         # write the pre-aggregated data dictionary to disk
         map_geodata.to_parquet(path=map_data_fpath)
     else:
-        raise ValueError(f"{map_data_fpath} does not exist")
+        raise FileNotFoundError(f"{os.path.dirname(map_data_fpath)} does not exist")

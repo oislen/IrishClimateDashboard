@@ -24,7 +24,7 @@ def bokeh_line_dash():
         The interactive bokeh line dashboard
     """
     logging.info("Initialise line plot begin")
-    master_data = pl.read_parquet(cons.master_data_fpath)
+    master_data = pl.scan_parquet(cons.master_data_fpath)
     # generate bokeh data for line plot
     bokeh_line_data_params = {"master_data":master_data, "stat":cons.stat_default, "agg_level":cons.line_agg_level_default, "counties":cons.counties}
     bokeh_line_data_dict = timeit(func=bokeh_line_data, params=bokeh_line_data_params)
@@ -48,9 +48,7 @@ def bokeh_line_dash():
         bokeh_line_data_dict = timeit(func=bokeh_line_data, params=bokeh_line_data_params)
         # update bokeh plot
         bokeh_line_plot_params = {"bokeh_data_dict":bokeh_line_data_dict, "col":col, "stat":stat, "agg_level":agg_level, "selection":selection}
-        line_plot = timeit(func=bokeh_line_plot, params=bokeh_line_plot_params)
-        # reassign bokeh plot to bokeh dashboard
-        dashboard_line.children[1] = line_plot
+        dashboard_line.children[1] = timeit(func=bokeh_line_plot, params=bokeh_line_plot_params)
         logging.info("Callback line plot end")
 
     def callback_multiselect_selectall():
@@ -66,7 +64,6 @@ def bokeh_line_dash():
         options=cons.line_agg_level_options,
         width=130,
         height=60,
-        aspect_ratio=10,
     )
     line_col_selector = Select(
         title="Climate Measure:",

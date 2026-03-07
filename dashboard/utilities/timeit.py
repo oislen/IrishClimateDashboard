@@ -22,13 +22,14 @@ def timeit(func, params, itr=1, digits=3):
     function output
         The function output from the final iteration
     """
+    t_results = []
     for i in range(itr):
         t0 = time.time()
         res = func(**params)
         t1 = time.time()
-        tres = t1 - t0
-    eres = round(np.mean(tres), digits)
-    logging_message=f"Execution Time for {str(func)}: {eres} seconds"
+        t_results.append(t1 - t0)
+    result = round(np.mean(t_results), digits)
+    logging_message=f"Execution Time for {func.__name__}: {result} seconds"
     if itr>1:
         logging_message=f"Mean {logging_message}"
     logging.info(logging_message)

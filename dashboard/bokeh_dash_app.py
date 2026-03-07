@@ -16,7 +16,7 @@ def main():
     
     Returns
     -------
-    bokeh.layouts.Tabs
+    bokeh.models.Tabs
         The interactive bokeh line dashboard
     """
     # initialise each dashboard

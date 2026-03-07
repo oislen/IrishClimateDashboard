@@ -96,7 +96,7 @@ class EC2Client():
         FleetIds : list
             The fleet ids to delete, default is []
         TerminateInstances : bool
-            Whether to delete the fleets, default is True
+            Whether to delete the fleets, default is False
 
         Returns
         -------
@@ -116,7 +116,8 @@ class EC2Client():
 
         Returns
         -------
-        The EC2 run instances response
+        dict
+            The EC2 run instances response
         """
         response = self.client.run_instances(**run_instances_config)
         return response
