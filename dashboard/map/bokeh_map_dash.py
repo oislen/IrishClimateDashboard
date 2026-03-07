@@ -24,11 +24,11 @@ def bokeh_map_dash():
         The interactive bokeh map dashboard
     """
     logging.info("Initialise map plot begin")
-    master_data = pl.read_parquet(cons.master_data_fpath)
+    master_data = pl.scan_parquet(cons.master_data_fpath)
     map_data = gpd.read_parquet(cons.map_data_fpath)
     station_data = gpd.read_parquet(cons.points_data_fpath)
     # generate bokeh data for map plot
-    max_datetime = master_data.select(pl.col("date").max().dt.strftime("%Y").str.to_datetime("%Y") - pl.duration(days=1)).to_series()[0]
+    max_datetime = master_data.select(pl.col("date").max().dt.strftime("%Y").str.to_datetime("%Y") - pl.duration(days=1)).collect().to_series()[0]
     bokeh_map_data_params = {"map_data":map_data,"station_data":station_data,"col":cons.col_default,"stat":cons.stat_default,"year":str(max_datetime.year)}
     bokeh_map_data_dict = timeit(func=bokeh_map_data, params=bokeh_map_data_params)
     # create bokeh map plot
@@ -49,9 +49,7 @@ def bokeh_map_dash():
         bokeh_map_data_dict = timeit(func=bokeh_map_data, params=bokeh_map_data_params)
         # update bokeh plot
         bokeh_map_plot_params = {"bokeh_map_data_dict":bokeh_map_data_dict,"show_stations":show_stations}
-        map_plot = timeit(func=bokeh_map_plot, params=bokeh_map_plot_params)
-        # reassign bokeh plot to bokeh dashboard
-        dashboard_map.children[1] = map_plot
+        dashboard_map.children[1] = timeit(func=bokeh_map_plot, params=bokeh_map_plot_params)
         logging.info("Callback map plot end")
 
     # set up selectors for bokeh map plot
@@ -91,7 +89,7 @@ def bokeh_map_dash():
     map_year_selector.on_change("value", callback_map_plot)
 
     # structure dashboard map plot
-    widgets_map = column(toggle_stations, map_col_selector, map_stat_selector, map_year_selector)
+    widgets_map = column(children=[toggle_stations, map_col_selector, map_stat_selector, map_year_selector])
     dashboard_map = row(widgets_map, map_plot)
 
     return dashboard_map

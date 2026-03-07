@@ -20,7 +20,7 @@ def gen_points_data(
     ----------
     master_data_fpath : str
         The file path to the master data on disk, default is cons.master_data_fpath
-    station_fpath : str
+    stations_fpath : str
         The file path to the stations reference data on disk, default is cons.stations_fpath
     points_data_fpath : str
         The file location to write the gis points data to disk, default is cons.points_data_fpath
@@ -48,9 +48,9 @@ def gen_points_data(
         geometry=gpd.points_from_xy(master_stations.longitude, master_stations.latitude),
         crs="EPSG:4326",
         ).to_crs(epsg=2157)
-    if os.path.exists(points_data_fpath):
+    if os.path.exists(os.path.dirname(points_data_fpath)):
         logging.info("Writing gis stations data to disk as .parquet file ...")
         # write the gis stations data
         geo_master_stations.to_parquet(path=points_data_fpath)
     else:
-        raise ValueError(f"{points_data_fpath} does not exist")
+        raise FileNotFoundError(f"{os.path.dirname(points_data_fpath)} does not exist")

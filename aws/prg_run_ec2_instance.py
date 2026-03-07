@@ -10,9 +10,14 @@ def run_ec2_instance(launch:bool=False, terminate:bool=False):
 
     Parameters
     ----------
+    launch : bool
+        Whether to launch a new ec2 instance, default is False
+    terminate : bool
+        Whether to terminate all running ec2 instances, default is False
 
     Returns
     -------
+    None
     """
     logging.info("Creating EC2 client.")
     # create EC2 client
@@ -27,16 +32,16 @@ def run_ec2_instance(launch:bool=False, terminate:bool=False):
         # start ec2 instance
         ec2_client.run_instances(cons.run_instances_config)
         # list any instances
-        Filters=[{"Name":"instance-state-name","Values":["running","pending"]}]
-        response = ec2_client.describe_instances(Filters=Filters)
+        filters=[{"Name":"instance-state-name","Values":["running","pending"]}]
+        response = ec2_client.describe_instances(Filters=filters)
         logging.info(response)
     # if terminating ec2 instance
     if terminate:
         logging.info("Terminating EC2 instances.")
         # list any running instances
-        Filters=[{"Name":"instance-state-name","Values":["running"]}]
-        response = ec2_client.describe_instances(Filters=Filters)
-        # set instance ids to shut down
+        filters=[{"Name":"instance-state-name","Values":["running"]}]
+        response = ec2_client.describe_instances(Filters=filters)
+        # set instance ids to shut down and terminate
         InstanceIds=[instance["InstanceId"] for reservation in response["Reservations"] for instance in reservation["Instances"]]
         if InstanceIds != []:
             # stop instance
@@ -44,7 +49,7 @@ def run_ec2_instance(launch:bool=False, terminate:bool=False):
             # terminate instance
             ec2_client.terminate_instances(InstanceIds=InstanceIds)
         # list any instances
-        response = ec2_client.describe_instances(Filters=Filters)
+        response = ec2_client.describe_instances(Filters=filters)
         logging.info(response)
 
 if __name__ == "__main__":

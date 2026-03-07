@@ -26,7 +26,7 @@ def load_data(
         The loaded webscraped met data
     """
     # extract stationid
-    station_id = int(re.findall(pattern="dly([0-9]+).csv", string=os.path.basename(fpath))[0])
+    station_id = int(re.findall(pattern="dly([0-9]+)\.csv", string=os.path.basename(fpath))[0])
     # load file lines
     with open(fpath) as file:
         lines = [line.rstrip().lower() for line in file]
@@ -46,7 +46,7 @@ def load_data(
         # subset required rows and columns
         cols_to_sub = ["date"] + cons.col_options
         sub_cols = [col for col in dataframe.columns if col in cols_to_sub]
-        row_filter = pl.col("date").str.contains("20[1-2]+")
+        row_filter = pl.col("date").str.contains("20(1[0-9]|2[0-9])")
         dataframe = dataframe.select(sub_cols).filter(row_filter)
         # convert numeric columns
         for col in cons.col_options:
